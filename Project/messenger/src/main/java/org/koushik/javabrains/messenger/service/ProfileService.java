@@ -10,9 +10,9 @@ import org.koushik.javabrains.messenger.model.Profile;
 public class ProfileService {
 
 	Map<String, Profile> profiles = DatabaseClass.getProfiles();
-	
-	ProfileService(){
-		profiles.put("João", new Profile(1L, "João", "Joãonelso","Nelso" ));
+
+	public ProfileService() {
+		profiles.put("João", new Profile(1L, "João", "Joãonelso", "Nelso"));
 		profiles.put("Pedro", new Profile(2L, "Pedro", "Pedronson", "Nelso"));
 	}
 
