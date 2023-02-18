@@ -6,6 +6,7 @@ import org.koushik.javabrains.messenger.model.Message;
 import org.koushik.javabrains.messenger.service.MessageService;
 
 import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
@@ -45,7 +46,12 @@ public class MessageResource {
 		message.setId(id);
 		return messageService.updateMessage(message);
 	}
-	
+	@DELETE
+	@Path("/{messageId}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public void deleteMessage(@PathParam("messageId")long id) {
+		messageService.removeMessage(id);
+	}
 
 	
 
