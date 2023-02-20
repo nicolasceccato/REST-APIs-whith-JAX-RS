@@ -26,12 +26,17 @@ public class CommentResource {
 	public List<Comment> getAllComments(@PathParam("messageId") long messageId){
 		return commentService.getAllComments(messageId);
 	}
+	@GET
+	@Path("/{commentId}")
+	public Comment getMessage(@PathParam("messageId") long messageId, @PathParam("commentId") long commentId) {
+		return commentService.getComment(messageId, commentId);
+	}
 	@POST
 	public Comment addMessage(@PathParam("messageId") long messageId, Comment comment) {
 		return commentService.addComment(messageId, comment);
 	}
 	@PUT
-	@Path("/{commentId")
+	@Path("/{commentId}")
 	public Comment updateMessage(@PathParam("messageId") long messageId, @PathParam("commentId") long id, Comment comment) {
 		comment.setId(id);
 		return commentService.updateComment(messageId, comment);
