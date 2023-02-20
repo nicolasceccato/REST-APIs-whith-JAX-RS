@@ -3,8 +3,10 @@ package org.koushik.javabrains.messenger.resources;
 import java.util.List;
 
 import org.koushik.javabrains.messenger.model.Message;
+import org.koushik.javabrains.messenger.resources.beans.MessageFilterBean;
 import org.koushik.javabrains.messenger.service.MessageService;
 
+import jakarta.ws.rs.BeanParam;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
@@ -17,42 +19,49 @@ import jakarta.ws.rs.core.MediaType;
 
 @Path("/messages")
 public class MessageResource {
-	
+
 	MessageService messageService = new MessageService();
-	
-	
-	@GET   
+
+	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<Message> getMessages() {
+	public List<Message> getMessages(@BeanParam MessageFilterBean filterBean) {
+		if (filterBean.getYear() > 0) {
+			return messageService.getAllMessagesForYear(filterBean.getYear());
+		}
+		if (filterBean.getStart() >= 0 && filterBean.getSize() > 0) {
+			return messageService.getAllMessagesPaginated(filterBean.getStart(), filterBean.getSize());
+		}
 		return messageService.getAllMessages();
 	}
+
 	@GET
 	@Path("/{messageId}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Message getMessage(@PathParam("messageId") long id) {
 		return messageService.getMessage(id);
 	}
+
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Message addMessage(Message message) {
 		return messageService.addMessage(message);
 	}
+
 	@PUT
 	@Path("/{messageId}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Message updateMessage(@PathParam("messageId")long id, Message message) {
+	public Message updateMessage(@PathParam("messageId") long id, Message message) {
 		message.setId(id);
 		return messageService.updateMessage(message);
 	}
+
 	@DELETE
 	@Path("/{messageId}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public void deleteMessage(@PathParam("messageId")long id) {
+	public void deleteMessage(@PathParam("messageId") long id) {
 		messageService.removeMessage(id);
 	}
-
-	
 
 }
