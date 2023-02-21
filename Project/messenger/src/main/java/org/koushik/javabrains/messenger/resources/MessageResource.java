@@ -1,7 +1,6 @@
 package org.koushik.javabrains.messenger.resources;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
 
 import org.koushik.javabrains.messenger.model.Message;
@@ -20,7 +19,6 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.Response.Status;
 import jakarta.ws.rs.core.UriInfo;
 
 @Path("/messages")
@@ -43,8 +41,21 @@ public class MessageResource {
 	@GET
 	@Path("/{messageId}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Message getMessage(@PathParam("messageId") long id) {
-		return messageService.getMessage(id);
+	public Message getMessage(@PathParam("messageId") long id, @Context UriInfo uriInfo) {
+		Message message = messageService.getMessage(id);
+		String uri = getUriForSelf(uriInfo, message);
+
+		message.addLink(uri, "self");
+		return message;
+	}
+
+	private String getUriForSelf(UriInfo uriInfo, Message message) {
+		String uri = uriInfo.getBaseUriBuilder()
+				.path(MessageResource.class)
+				.path(Long.toString(message.getId()))
+				.build()
+				.toString();
+		return uri;
 	}
 
 	@POST
