@@ -22,6 +22,8 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
 
 @Path("/messages")
+@Consumes(MediaType.APPLICATION_JSON)
+@Produces(value = {MediaType.APPLICATION_JSON, MediaType.TEXT_XML})
 public class MessageResource {
 
 	MessageService messageService = new MessageService();
@@ -53,7 +55,8 @@ public class MessageResource {
 
 	private String getUriForComments(UriInfo uriInfo, Message message) {
 		URI uri = uriInfo.getBaseUriBuilder().path(MessageResource.class)
-				.path(MessageResource.class, "getCommentResource").path(CommentResource.class).resolveTemplate("messageId", message.getId()).build();
+				.path(MessageResource.class, "getCommentResource").path(CommentResource.class)
+				.resolveTemplate("messageId", message.getId()).build();
 		return uri.toString();
 	}
 
