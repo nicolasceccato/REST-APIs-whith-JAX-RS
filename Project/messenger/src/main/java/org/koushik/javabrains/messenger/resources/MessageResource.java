@@ -44,17 +44,27 @@ public class MessageResource {
 	public Message getMessage(@PathParam("messageId") long id, @Context UriInfo uriInfo) {
 		Message message = messageService.getMessage(id);
 		String uri = getUriForSelf(uriInfo, message);
-
 		message.addLink(uri, "self");
+		message.addLink(getUriForProfile(uriInfo, message), "profile");
+		message.addLink(getUriForComments(uriInfo, message), "comments");
+
 		return message;
 	}
 
+	private String getUriForComments(UriInfo uriInfo, Message message) {
+		URI uri = uriInfo.getBaseUriBuilder().path(MessageResource.class)
+				.path(MessageResource.class, "getCommentResource").path(CommentResource.class).resolveTemplate("messageId", message.getId()).build();
+		return uri.toString();
+	}
+
+	private String getUriForProfile(UriInfo uriInfo, Message message) {
+		URI uri = uriInfo.getBaseUriBuilder().path(ProfileResource.class).path(message.getAuthor()).build();
+		return uri.toString();
+	}
+
 	private String getUriForSelf(UriInfo uriInfo, Message message) {
-		String uri = uriInfo.getBaseUriBuilder()
-				.path(MessageResource.class)
-				.path(Long.toString(message.getId()))
-				.build()
-				.toString();
+		String uri = uriInfo.getBaseUriBuilder().path(MessageResource.class).path(Long.toString(message.getId()))
+				.build().toString();
 		return uri;
 	}
 
@@ -62,14 +72,12 @@ public class MessageResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response addMessage(Message message, @Context UriInfo uriInfo) {
-		
+
 		Message newMessage = messageService.addMessage(message);
 		String newId = String.valueOf(newMessage.getId());
 		URI uri = uriInfo.getAbsolutePathBuilder().path(newId).build();
-		return Response.created(uri)
-					   .entity(newMessage)
-					   .build();
-		//return messageService.addMessage(message);
+		return Response.created(uri).entity(newMessage).build();
+		// return messageService.addMessage(message);
 	}
 
 	@PUT
@@ -87,8 +95,7 @@ public class MessageResource {
 	public void deleteMessage(@PathParam("messageId") long id) {
 		messageService.removeMessage(id);
 	}
-	
-	
+
 	@Path("/{messageId}/comments")
 	public CommentResource getCommentResource() {
 		return new CommentResource();
